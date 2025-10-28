@@ -4,6 +4,7 @@
 #include <openssl/sha.h>
 #include <jsoncpp/json/json.h>
 #include <chrono>
+#include "exception.hpp"
 
 #include <websocketpp/base64/base64.hpp>
 
@@ -95,7 +96,7 @@ int websocket_endpoint::connect(std::string const & uri, const int& id) {
     return id;
 }
 
-void websocket_endpoint::close(int id, websocketpp::close::status::value code) {
+void websocket_endpoint::close(const int& id, const websocketpp::close::status::value& code) {
     websocketpp::lib::error_code ec;
 
     if(con == nullptr) std::cout << "> Erreur : connexion invalide (nullptr)" << std::endl;
@@ -111,20 +112,17 @@ void websocket_endpoint::close(int id, websocketpp::close::status::value code) {
 void websocket_endpoint::authenticate(const std::string& password) {
 
     if(con == nullptr){
-        std::cout << "> Erreur : connexion invalide (nullptr)" << std::endl;
+        throw obswebsocket::ConnectionError("Erreur : connexion invalide (nullptr)");
         return;
     }
 
-    if (con->m_messages.empty()) {
-        std::cout << "> No authentication data received!" << std::endl;
-        return;
-    }
+    if (con->m_messages.empty()) { throw obswebsocket::ConnectionError("No authentication data received"); return; }
 
     // Récupérer le dernier message contenant le challenge
     Json::Value response;
     Json::Reader reader;
     if (!reader.parse(con->m_messages.back(), response)) {
-        std::cout << "> Failed to parse JSON!" << std::endl;
+        throw obswebsocket::ConnectionError("Failed to parse JSON!");
         return;
     }
 

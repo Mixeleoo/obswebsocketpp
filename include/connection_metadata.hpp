@@ -21,13 +21,6 @@ public:
 
     // Ah ouais ca recoit les messages et touut
     void on_message(websocketpp::connection_hdl, client::message_ptr);
-
-    /**
-      * @brief Récupérer le message parmis les messages enregistrés dans lequel field apparaît
-      * @param field champ recherché dans les messages
-      * @return 
-    */
-    Json::Value get_message(const std::string& field);
     inline void add_request(const int& requestId, std::shared_ptr<std::promise<std::string>>& promise) { pending_requests[requestId] = std::move(promise); }
 
     inline void record_sent_message(std::string message) { m_messages.push_back(">> " + message); }

@@ -78,6 +78,12 @@
         "shared_mutex": "cpp",
         "cinttypes": "cpp",
         "typeindex": "cpp",
-        "*.ipp": "cpp"
+        "*.ipp": "cpp",
+        "hash_map": "cpp",
+        "strstream": "cpp",
+        "cfenv": "cpp",
+        "ranges": "cpp",
+        "stdfloat": "cpp",
+        "valarray": "cpp"
     }
 }

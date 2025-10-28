@@ -2,8 +2,10 @@
 OBJDIR = obj
 SRCDIR = src
 BINDIR = bin
+LIBDIR = lib
 INCDIR = include
 EXTDIR = external
+BUIDIR = build
 
 # Compilateur et options
 CC = g++
@@ -14,22 +16,22 @@ LDFLAGS = -lboost_system -lboost_thread -lpthread -ljsoncpp -lssl -lcrypto
 SRCS = $(wildcard $(SRCDIR)/*.cpp)
 OBJS = $(patsubst $(SRCDIR)/%.cpp,$(OBJDIR)/%.o,$(SRCS))
 
-# Nom de l'exécutable
-EXEC = $(BINDIR)/a.out
+# Nom de la bibliothèque
+STATIC_LIB = $(LIBDIR)/libobswebsocket++.a
 
 # Compilation finale
-all: $(EXEC)
+all: $(STATIC_LIB)
 
-$(EXEC): $(OBJS)
-	$(CC) $(OBJS) -o $@ $(LDFLAGS)
+$(BINDIR)/%.exe: %.cpp
+	$(CC) $(CFLAGS) -L$(LIBDIR) $< -lobswebsocket++ $(LDFLAGS) -o $@
+
+# Création de la bibliothèque statique
+$(STATIC_LIB): $(OBJS)
+	ar rcs $@ $^
 
 # Compilation des fichiers .cpp en .o
 $(OBJDIR)/%.o: $(SRCDIR)/%.cpp $(INCDIR)/%.hpp | $(OBJDIR)
-	$(CC) $(CFLAGS) -c $< -o $@
-
-# Dépendances suplémentaires
-$(OBJDIR)/main.o: $(SRCDIR)/main.cpp $(INCDIR)/obswebsocket.hpp
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) -fPIC -c $< -o $@
 
 $(OBJDIR)/obswebsocket.o: $(INCDIR)/websocket_endpoint.hpp
 $(OBJDIR)/websocket_endpoint.o: $(INCDIR)/connection_metadata.hpp
@@ -41,16 +43,6 @@ $(OBJDIR):
 # Création du dossier obj s'il n'existe pas
 $(BINDIR):
 	mkdir -p $(BINDIR)
-
-# Exécution
-run:
-	$(EXEC)
-
-runv:
-	valgrind $(EXEC)
-
-rung:
-	gdb $(EXEC)
 
 # Nettoyage
 clean:

@@ -16,7 +16,7 @@ public:
     ~websocket_endpoint();
 
     int connect(std::string const & uri, const int& id);
-    void close(int id, websocketpp::close::status::value code);
+    void close(const int& id, const websocketpp::close::status::value& code);
 
     // Fonction pour s'authentifier à OBS WebSocket
     void authenticate(const std::string& password);

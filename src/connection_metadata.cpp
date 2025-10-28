@@ -60,31 +60,6 @@ void connection_metadata::on_message(websocketpp::connection_hdl hdl, client::me
     }
 }
 
-Json::Value connection_metadata::get_message(const std::string& field){
-    std::vector<std::string>::reverse_iterator it;
-
-    // On cherche la dernière instance du field recherché
-    for(it = m_messages.rbegin(); it != m_messages.rend() && it->find(field) == std::string::npos; ++it);
-
-    // Si y'a pas de dernière instance, ça veut dire que l'itération a atteint la fin
-    if(it == m_messages.rend()){
-        std::cerr << field << " non trouvé" << std::endl;
-        return -1;
-    }
-
-    Json::Value jsonData;
-    Json::CharReaderBuilder reader;
-    std::string errs;
-
-    std::istringstream iss(*it);
-    if (!Json::parseFromStream(reader, iss, &jsonData, &errs)) {
-        std::cerr << "Erreur de parsing JSON: " << errs << std::endl;
-        return 1;
-    }
-
-    return jsonData["d"]["responseData"][field];
-}
-
 std::ostream & operator<< (std::ostream & out, connection_metadata const & data) {
     out << "> URI: " << data.m_uri << "\n"
         << "> Status: " << data.m_status << "\n"
